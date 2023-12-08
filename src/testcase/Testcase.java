@@ -18,7 +18,7 @@ public class Testcase {
 		this.amb = amb;
 	}
 	
-	public void init() throws RTIinternalError {
+	public void init() {
 	
 	}
 	
@@ -26,7 +26,7 @@ public class Testcase {
 		
 	}
 	
-	public void finish() throws RTIinternalError {
+	public void finish() {
 		
 	}
 	

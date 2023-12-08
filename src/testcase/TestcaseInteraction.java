@@ -22,12 +22,14 @@ public class TestcaseInteraction extends Testcase {
 	
 	private EncoderFactory encoderFactory;
 	private RtiFactory rtiFactory;
+	private int[] intArray;
 	
-	public TestcaseInteraction(String federateName, int iterations, Federate fed, FedAmb amb) throws RTIinternalError {
+	public TestcaseInteraction(String federateName, int iterations, Federate fed, FedAmb amb, int[] testCaseArray) throws RTIinternalError {
 		super(federateName, iterations, fed, amb);
 		
 		rtiFactory = RtiFactoryFactory.getRtiFactory();
 		encoderFactory = rtiFactory.getEncoderFactory();
+		intArray = testCaseArray;
 	}
 	
 	
@@ -39,7 +41,7 @@ public class TestcaseInteraction extends Testcase {
 	
 	@Override
 	public void step(int i) throws RTIinternalError {
-		int[] intArray = {1, 3, 5, 7};
+		// int[] intArray = {1, 3, 5, 7};
 		try {
 			ParameterHandleValueMap	parameter = fed.rtiamb.getParameterHandleValueMapFactory().create(1);
 			HLAopaqueDataCoder opaqueDataCoder = new HLAopaqueDataCoder(encoderFactory);
