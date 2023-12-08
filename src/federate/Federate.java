@@ -89,11 +89,12 @@ public class Federate {
 	protected double evokeMin;
 	protected double evokeMax;
 	protected int interactionParamSize;
+	protected int interactionTestCaseArray[];
 
 	public static final String READY_TO_RUN = "ReadyToRun";
 	public static final String READY_TO_SYNC = "ReadyToSync";
 	public static final double DEFAULT_STEPLENGTH = 1;
-	public static final int NUM_FEDERATES = 4;
+	public static final int NUM_FEDERATES = 2;
 	public static final String FEDERATION_NAME = "MinhaFederacao1516e";
 	public static final String FOM_PATH = "/home/joaorodolforosa/eclipse-workspace/hlaPerformance/PerformanceEvaluation.xml";
 	public static final String MIM_FOM_PATH = "/home/joaorodolforosa/eclipse-workspace/hlaPerformance/HLAstandardMIM.xml";
@@ -120,6 +121,10 @@ public class Federate {
 		this.evokeMin = min;
 		this.evokeMax = max;
 		this.interactionParamSize = interactionParamSize;
+		this.interactionTestCaseArray = new int[interactionParamSize];
+		for (int i = 0; i < interactionTestCaseArray.length; i++) {
+			interactionTestCaseArray[i] = i;
+		}
 	}
 
 	public void run() throws RTIinternalError {
@@ -135,7 +140,8 @@ public class Federate {
 
 		// Connect
 		try {
-			rtiamb.connect(fedamb, CallbackModel.HLA_EVOKED);
+			rtiamb.connect(fedamb, CallbackModel.HLA_IMMEDIATE, "10.12.28.10");
+			//rtiamb.connect(fedamb, CallbackModel.HLA_EVOKED);
 		} catch (ConnectionFailed | InvalidLocalSettingsDesignator | UnsupportedCallbackModel | AlreadyConnected
 				| CallNotAllowedFromWithinCallback | RTIinternalError e) {
 			throw new RTIinternalError("Erro na conexão com o RTI ", e);
@@ -189,7 +195,8 @@ public class Federate {
 			}
 		}
 
-		waitForFederates(); // waitForUser();
+		waitForFederates();
+		// waitForUser();
 
 		try {
 			rtiamb.synchronizationPointAchieved(READY_TO_RUN);
@@ -214,18 +221,17 @@ public class Federate {
 			}
 			break;
 		case Testcase_Interaction:
-			TestcaseInteraction t1 = new TestcaseInteraction(federateName, noIterations, this, fedamb);
+			TestcaseInteraction t1 = new TestcaseInteraction(federateName, noIterations, this, fedamb, interactionTestCaseArray);
 			for (int i = 0; i < 10; i++) {
-				runTestcase(t1);
+				runTestcase(t1);				
 			}
 			break;
 		case Testcase_ObjectUpdate:
 			TestcaseObjectUpdate t3 = new TestcaseObjectUpdate(federateName, noIterations, this, fedamb);
 			for (int i = 0; i < 10; i++) {
-				runTestcase(t3);
+				runTestcase(t3);				
 			}
 			break;
-
 		}
 
 		// clean up
@@ -319,6 +325,7 @@ public class Federate {
 				attributes2.add(fedamb.hlaFederateHandle);
 				rtiamb.requestAttributeValueUpdate(fedamb.hlaFederate, attributes2, generateTag());
 				System.out.println("Conectados: " + fedamb.joinedFederates);
+
 			} catch (RTIinternalError | FederateNotExecutionMember | NotConnected | AttributeNotDefined
 					| ObjectClassNotDefined | SaveInProgress | RestoreInProgress e) {
 				throw new RTIinternalError("Erro em waitForFederates: ", e);
